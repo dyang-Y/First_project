@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Post
-from .forms import PostForm
+from django.contrib import messages
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 
 # Create your views here.
 
@@ -13,7 +14,25 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'board/post_detail.html', {'post': post})
+    comments = post.comments.all()
+    comment_form = CommentForm()
+    
+    if request.method == 'POST' and request.user.is_authenticated:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = post
+            comment.author = request.user.username
+            comment.save()
+            messages.success(request, '댓글이 등록되었습니다.')
+            return redirect('post_detail', pk=post.pk)
+    
+    context = {
+        'post': post,
+        'comments': comments,
+        'comment_form': comment_form,
+    }
+    return render(request, 'board/post_detail.html', context)
 
 @login_required(login_url='login')
 def post_create(request):
@@ -57,3 +76,44 @@ def post_delete(request, pk):
         post.delete()
         return redirect('post_list')
     return render(request, 'board/post_confirm_delete.html', {'post': post})
+
+@login_required(login_url='login')
+def comment_edit(request, post_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk, post__pk=post_pk)
+    
+    # 작성자만 편집 가능하도록 확인
+    if comment.author != request.user.username:
+        return HttpResponseForbidden("이 댓글을 편집할 권한이 없습니다.")
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '댓글이 수정되었습니다.')
+            return redirect('post_detail', pk=post_pk)
+    else:
+        form = CommentForm(instance=comment)
+    
+    return render(request, 'board/comment_form.html', {
+        'form': form,
+        'post_pk': post_pk,
+        'comment_pk': comment_pk
+    })
+
+@login_required(login_url='login')
+def comment_delete(request, post_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk, post__pk=post_pk)
+    
+    # 작성자만 삭제 가능하도록 확인
+    if comment.author != request.user.username:
+        return HttpResponseForbidden("이 댓글을 삭제할 권한이 없습니다.")
+    
+    if request.method == 'POST':
+        comment.delete()
+        messages.success(request, '댓글이 삭제되었습니다.')
+        return redirect('post_detail', pk=post_pk)
+    
+    return render(request, 'board/comment_confirm_delete.html', {
+        'comment': comment,
+        'post_pk': post_pk
+    })

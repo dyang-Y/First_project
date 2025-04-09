@@ -1,0 +1,30 @@
+{% extends 'board/base.html' %}
+
+{% block title %}댓글 삭제{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0">댓글 삭제 확인</h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">정말로 이 댓글을 삭제하시겠습니까?</p>
+                <blockquote class="blockquote">
+                    <p class="small">{{ comment.content }}</p>
+                </blockquote>
+                <p class="text-danger">이 작업은 되돌릴 수 없습니다.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'post_detail' pk=post_pk %}" class="btn btn-secondary me-md-2">취소</a>
+                        <button type="submit" class="btn btn-danger">삭제</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
