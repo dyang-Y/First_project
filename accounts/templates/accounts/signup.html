@@ -33,6 +33,23 @@
                     </div>
                     
                     <div class="mb-3">
+                        <label for="{{ form.nickname.id_for_label }}" class="form-label">닉네임</label>
+                        <div class="input-group">
+                            {{ form.nickname }}
+                            <button class="btn btn-outline-secondary" type="button" id="checkNicknameBtn">중복확인</button>
+                        </div>
+                        <div id="nicknameStatus"></div>
+                        {% if form.nickname.errors %}
+                        <div class="text-danger">
+                            {% for error in form.nickname.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">{{ form.nickname.help_text }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label for="{{ form.first_name.id_for_label }}" class="form-label">이름</label>
                         {{ form.first_name }}
                         {% if form.first_name.errors %}
@@ -97,9 +114,10 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // 아이디 중복 체크 코드
         const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
         const usernameStatus = document.getElementById('usernameStatus');
-        const checkButton = document.getElementById('checkUsernameBtn');
+        const checkUsernameBtn = document.getElementById('checkUsernameBtn');
         
         function checkUsername() {
             const username = usernameInput.value.trim();
@@ -122,10 +140,43 @@
         }
         
         // 버튼을 클릭하면 중복 확인
-        checkButton.addEventListener('click', checkUsername);
+        checkUsernameBtn.addEventListener('click', checkUsername);
         
         // 입력 필드에서 포커스를 잃으면 자동 확인
         usernameInput.addEventListener('blur', checkUsername);
+        
+        // 닉네임 중복 체크 코드
+        const nicknameInput = document.getElementById('{{ form.nickname.id_for_label }}');
+        const nicknameStatus = document.getElementById('nicknameStatus');
+        const checkNicknameBtn = document.getElementById('checkNicknameBtn');
+        
+        function checkNickname() {
+            const nickname = nicknameInput.value.trim();
+            if (nickname.length === 0) {
+                nicknameStatus.innerHTML = '';
+                return;
+            }
+            
+            fetch(`{% url 'check_nickname' %}?nickname=${encodeURIComponent(nickname)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_taken) {
+                        nicknameStatus.innerHTML = '<div class="text-danger mt-1"><i class="bi bi-x-circle"></i> 이미 사용 중인 닉네임입니다.</div>';
+                    } else if (data.contains_bad_word) {
+                        nicknameStatus.innerHTML = '<div class="text-danger mt-1"><i class="bi bi-x-circle"></i> 부적절한 단어가 포함되어 있습니다.</div>';
+                    } else if (!data.is_valid) {
+                        nicknameStatus.innerHTML = '<div class="text-danger mt-1"><i class="bi bi-x-circle"></i> 닉네임은 15자 이내로 입력해주세요.</div>';
+                    } else {
+                        nicknameStatus.innerHTML = '<div class="text-success mt-1"><i class="bi bi-check-circle"></i> 사용 가능한 닉네임입니다.</div>';
+                    }
+                });
+        }
+        
+        // 버튼을 클릭하면 중복 확인
+        checkNicknameBtn.addEventListener('click', checkNickname);
+        
+        // 입력 필드에서 포커스를 잃으면 자동 확인
+        nicknameInput.addEventListener('blur', checkNickname);
         
         // 비밀번호 일치 확인 코드 추가
         const password1Input = document.getElementById('{{ form.password1.id_for_label }}');

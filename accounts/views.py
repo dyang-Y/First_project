@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from .forms import SignUpForm
+import re
+from .models import UserProfile
 
 # Create your views here.
 
@@ -48,17 +50,30 @@ def logout_view(request):
     return redirect('post_list')
 
 def check_username(request):
-    """아이디 중복 체크를 위한 AJAX 뷰"""
-    username = request.GET.get('username', None)
-    data = {
-        'is_taken': User.objects.filter(username__iexact=username).exists()
-    }
+    username = request.GET.get('username', '')
+    is_taken = User.objects.filter(username=username).exists()
+    is_valid = bool(re.match(r'^[a-zA-Z0-9@.+\-_]+$', username))
+    return JsonResponse({
+        'is_taken': is_taken,
+        'is_valid': is_valid
+    })
+
+def check_nickname(request):
+    nickname = request.GET.get('nickname', '')
+    is_taken = UserProfile.objects.filter(nickname=nickname).exists()
     
-    # 정규식 체크도 추가 (clean_username에서의 검사와 동일하게)
-    if username and not data['is_taken']:
-        import re
-        data['is_valid'] = bool(re.match(r'^[a-zA-Z0-9@.+\-_]+$', username))
-    else:
-        data['is_valid'] = False
-        
-    return JsonResponse(data)
+    # 비속어 검사 (forms.py와 동일한 목록 사용)
+    bad_words = [
+        '바보', '멍청이', '병신', '개새끼', '씨발', '시발', '좆', '존나', '새끼',
+        'babo', 'idiot', 'stupid', 'bastard', 'shit', 'fuck', 'asshole', 'damn'
+    ]
+    
+    contains_bad_word = any(word.lower() in nickname.lower() for word in bad_words)
+    
+    is_valid = len(nickname) <= 15 and not contains_bad_word
+    
+    return JsonResponse({
+        'is_taken': is_taken,
+        'is_valid': is_valid,
+        'contains_bad_word': contains_bad_word
+    })
