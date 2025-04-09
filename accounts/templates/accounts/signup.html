@@ -23,7 +23,9 @@
                             {% endfor %}
                         </div>
                         {% endif %}
-                        <div class="form-text">150자 이하, 문자, 숫자 및 @/./+/-/_만 사용 가능합니다.</div>
+                        <div class="form-text">
+                            <strong>주의:</strong> {{ form.username.help_text }}
+                        </div>
                     </div>
                     
                     <div class="mb-3">
