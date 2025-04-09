@@ -1,0 +1,42 @@
+{% extends 'board/base.html' %}
+
+{% block title %}게시글 목록{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">게시글 목록</h1>
+        <div class="text-end mb-3">
+            <a href="{% url 'post_create' %}" class="btn btn-primary">글쓰기</a>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>번호</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{ post.id }}</td>
+                            <td><a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">{{ post.title }}</a></td>
+                            <td>{{ post.author }}</td>
+                            <td>{{ post.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">게시글이 없습니다.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

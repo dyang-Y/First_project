@@ -1,0 +1,40 @@
+{% extends 'board/base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ post.title }}</h1>
+            <div>
+                <a href="{% url 'post_edit' pk=post.pk %}" class="btn btn-outline-primary">수정</a>
+                <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-outline-danger">삭제</a>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>작성자:</strong> {{ post.author }}
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>작성일:</strong> {{ post.created_at|date:"Y-m-d H:i" }}
+                        {% if post.updated_at != post.created_at %}
+                        <br><strong>수정일:</strong> {{ post.updated_at|date:"Y-m-d H:i" }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ post.content|linebreaks }}</p>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <a href="{% url 'post_list' %}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
