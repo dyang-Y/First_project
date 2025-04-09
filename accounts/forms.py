@@ -24,6 +24,8 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
         # 사용자명 필드에 도움말 추가
         self.fields['username'].help_text = '영문자, 숫자, 특수문자(@/./+/-/_)만 사용 가능합니다. 한글은 사용할 수 없습니다.'
+        # 비밀번호 확인 필드 라벨 명확하게
+        self.fields['password2'].label = '비밀번호 확인'
     
     def clean_username(self):
         username = self.cleaned_data.get('username')

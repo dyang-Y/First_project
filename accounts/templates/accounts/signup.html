@@ -70,6 +70,7 @@
                     <div class="mb-3">
                         <label for="{{ form.password2.id_for_label }}" class="form-label">비밀번호 확인</label>
                         {{ form.password2 }}
+                        <div id="passwordMatchStatus"></div>
                         {% if form.password2.errors %}
                         <div class="text-danger">
                             {% for error in form.password2.errors %}
@@ -124,6 +125,34 @@
         
         // 입력 필드에서 포커스를 잃으면 자동 확인
         usernameInput.addEventListener('blur', checkUsername);
+        
+        // 비밀번호 일치 확인 코드 추가
+        const password1Input = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2Input = document.getElementById('{{ form.password2.id_for_label }}');
+        const passwordMatchStatus = document.getElementById('passwordMatchStatus');
+        
+        function checkPasswordMatch() {
+            const password1 = password1Input.value;
+            const password2 = password2Input.value;
+            
+            if (password2.length === 0) {
+                passwordMatchStatus.innerHTML = '';
+                return;
+            }
+            
+            if (password1 === password2) {
+                passwordMatchStatus.innerHTML = '<div class="text-success mt-1"><i class="bi bi-check-circle"></i> 비밀번호가 일치합니다.</div>';
+            } else {
+                passwordMatchStatus.innerHTML = '<div class="text-danger mt-1"><i class="bi bi-x-circle"></i> 비밀번호가 일치하지 않습니다.</div>';
+            }
+        }
+        
+        // 비밀번호 입력 필드에서 키 입력이 있을 때마다 확인
+        password1Input.addEventListener('input', checkPasswordMatch);
+        password2Input.addEventListener('input', checkPasswordMatch);
+        
+        // 페이지 로드 시 초기 확인
+        checkPasswordMatch();
     });
 </script>
 {% endblock %}
