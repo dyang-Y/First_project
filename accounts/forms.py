@@ -36,7 +36,7 @@ class SignUpForm(UserCreationForm):
         first_name = self.cleaned_data.get('first_name')
         # 한글, 영문자만 허용하는 정규식 (공백 제외)
         if not re.match(r'^[가-힣a-zA-Z]+$', first_name):
-            raise ValidationError('이름은 한글과 영문자만 입력 가능합니다. 숫자, 특수문자, 공백은 사용할 수 없습니다.')
+            raise ValidationError('이름은 한글과 영문자만 입력 가능합니다. 숫자나 특수문자는 사용할 수 없습니다.')
         return first_name
         
     def save(self, commit=True):
