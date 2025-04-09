@@ -9,4 +9,5 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.post_delete, name='post_delete'),
     path('post/<int:post_pk>/comment/<int:comment_pk>/edit/', views.comment_edit, name='comment_edit'),
     path('post/<int:post_pk>/comment/<int:comment_pk>/delete/', views.comment_delete, name='comment_delete'),
+    path('tag/<str:tag_name>/', views.tag_posts, name='tag_posts'),
 ] 

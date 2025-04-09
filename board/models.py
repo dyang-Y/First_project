@@ -10,6 +10,12 @@ def get_upload_path(instance, filename):
 
 # Create your models here.
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    
+    def __str__(self):
+        return self.name
+
 class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -20,6 +26,9 @@ class Post(models.Model):
     # 파일 업로드 필드 추가
     image = models.ImageField(upload_to=get_upload_path, blank=True, null=True)
     file = models.FileField(upload_to=get_upload_path, blank=True, null=True)
+    
+    # 태그 추가
+    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
     
     def __str__(self):
         return self.title

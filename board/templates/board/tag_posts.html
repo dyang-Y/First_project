@@ -1,14 +1,22 @@
 {% extends 'board/base.html' %}
 
-{% block title %}게시글 목록{% endblock %}
+{% block title %}태그: {{ tag.name }}{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <h1 class="mb-4">게시글 목록</h1>
-        <div class="text-end mb-3">
+        <h1 class="mb-4">
+            <span class="badge bg-primary me-2"><i class="bi bi-tag"></i> {{ tag.name }}</span> 
+            태그가 있는 게시글
+        </h1>
+        
+        <div class="d-flex justify-content-between mb-3">
+            <a href="{% url 'post_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> 전체 게시글로 돌아가기
+            </a>
             <a href="{% url 'post_create' %}" class="btn btn-primary">글쓰기</a>
         </div>
+        
         <div class="card">
             <div class="card-body p-0">
                 <table class="table table-hover table-striped mb-0">
@@ -43,7 +51,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center">게시글이 없습니다.</td>
+                            <td colspan="4" class="text-center">이 태그의 게시글이 없습니다.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

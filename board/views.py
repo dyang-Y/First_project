@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import PostForm, CommentForm
 
 # Create your views here.
@@ -11,6 +11,11 @@ from .forms import PostForm, CommentForm
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'board/post_list.html', {'posts': posts})
+
+def tag_posts(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(tags=tag).order_by('-created_at')
+    return render(request, 'board/tag_posts.html', {'tag': tag, 'posts': posts})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
