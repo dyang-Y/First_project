@@ -5,4 +5,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('ajax/check_username/', views.check_username, name='check_username'),
 ] 

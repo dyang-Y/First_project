@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 from .forms import SignUpForm
 
 # Create your views here.
@@ -44,3 +46,19 @@ def logout_view(request):
     logout(request)
     messages.success(request, "로그아웃되었습니다.")
     return redirect('post_list')
+
+def check_username(request):
+    """아이디 중복 체크를 위한 AJAX 뷰"""
+    username = request.GET.get('username', None)
+    data = {
+        'is_taken': User.objects.filter(username__iexact=username).exists()
+    }
+    
+    # 정규식 체크도 추가 (clean_username에서의 검사와 동일하게)
+    if username and not data['is_taken']:
+        import re
+        data['is_valid'] = bool(re.match(r'^[a-zA-Z0-9@.+\-_]+$', username))
+    else:
+        data['is_valid'] = False
+        
+    return JsonResponse(data)
