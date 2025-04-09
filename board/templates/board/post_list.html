@@ -24,7 +24,17 @@
                         {% for post in posts %}
                         <tr>
                             <td>{{ post.id }}</td>
-                            <td><a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">{{ post.title }}</a></td>
+                            <td>
+                                <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
+                                    {{ post.title }}
+                                    {% if post.image %}
+                                    <i class="bi bi-image text-success" title="이미지 첨부"></i>
+                                    {% endif %}
+                                    {% if post.file %}
+                                    <i class="bi bi-paperclip text-primary" title="파일 첨부"></i>
+                                    {% endif %}
+                                </a>
+                            </td>
                             <td>{{ post.author }}</td>
                             <td>{{ post.created_at|date:"Y-m-d H:i" }}</td>
                         </tr>

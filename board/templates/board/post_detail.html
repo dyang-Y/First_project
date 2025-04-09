@@ -29,68 +29,94 @@
             </div>
             <div class="card-body">
                 <p class="card-text">{{ post.content|linebreaks }}</p>
+                
+                {% if post.image %}
+                <div class="mt-4">
+                    <h5>이미지</h5>
+                    <img src="{{ post.image.url }}" alt="게시글 이미지" class="img-fluid rounded" style="max-width: 100%; max-height: 500px;">
+                </div>
+                {% endif %}
+                
+                {% if post.file %}
+                <div class="mt-4">
+                    <h5>첨부파일</h5>
+                    <p>
+                        <a href="{{ post.file.url }}" class="btn btn-outline-secondary" download>
+                            <i class="bi bi-download"></i> 
+                            파일 다운로드 
+                            {% if post.get_file_extension %}
+                            ({{ post.get_file_extension }})
+                            {% endif %}
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
             </div>
         </div>
         
         <!-- 댓글 섹션 -->
-        <div class="card mb-4">
-            <div class="card-header bg-light">
-                <h4>댓글 ({{ comments|length }})</h4>
-            </div>
-            <div class="card-body">
-                {% if user.is_authenticated %}
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        {{ comment_form.content }}
-                        {% if comment_form.content.errors %}
-                        <div class="text-danger">
-                            {% for error in comment_form.content.errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="submit" class="btn btn-primary">댓글 작성</button>
-                    </div>
-                </form>
-                {% else %}
-                <div class="alert alert-info">
-                    댓글을 작성하려면 <a href="{% url 'login' %}?next={{ request.path }}">로그인</a>이 필요합니다.
-                </div>
-                {% endif %}
-                
-                <hr>
-                
-                {% if comments %}
-                <div class="comment-list">
-                    {% for comment in comments %}
-                    <div class="comment card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="card-subtitle mb-2 text-muted">{{ comment.author }} | {{ comment.created_at|date:"Y-m-d H:i" }}</h6>
-                                </div>
-                                {% if user.username == comment.author %}
-                                <div>
-                                    <a href="{% url 'comment_edit' post_pk=post.pk comment_pk=comment.pk %}" class="btn btn-sm btn-outline-primary">수정</a>
-                                    <a href="{% url 'comment_delete' post_pk=post.pk comment_pk=comment.pk %}" class="btn btn-sm btn-outline-danger">삭제</a>
-                                </div>
-                                {% endif %}
+        <div class="mt-5">
+            <h3 class="mb-3">댓글 <span class="badge bg-secondary">{{ comments.count }}</span></h3>
+            
+            <!-- 댓글 작성 폼 -->
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.content }}
+                            {% if comment_form.content.errors %}
+                            <div class="text-danger">
+                                {% for error in comment_form.content.errors %}
+                                {{ error }}
+                                {% endfor %}
                             </div>
-                            <p class="card-text">{{ comment.content|linebreaks }}</p>
+                            {% endif %}
                         </div>
-                    </div>
-                    {% endfor %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">댓글 작성</button>
+                        </div>
+                    </form>
                 </div>
-                {% else %}
-                <p class="text-center text-muted my-4">아직 댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
-                {% endif %}
             </div>
+            {% else %}
+            <div class="alert alert-info mb-4">
+                댓글을 작성하려면 <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">로그인</a>이 필요합니다.
+            </div>
+            {% endif %}
+            
+            <!-- 댓글 목록 -->
+            {% if comments %}
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    {% for comment in comments %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ comment.author }}</h6>
+                                <p class="mb-1">{{ comment.content|linebreaks }}</p>
+                                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                            </div>
+                            {% if user.username == comment.author %}
+                            <div>
+                                <a href="{% url 'comment_edit' post_pk=post.pk comment_pk=comment.pk %}" class="btn btn-sm btn-outline-primary">수정</a>
+                                <a href="{% url 'comment_delete' post_pk=post.pk comment_pk=comment.pk %}" class="btn btn-sm btn-outline-danger">삭제</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary">
+                아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
+            </div>
+            {% endif %}
         </div>
         
-        <div class="text-center">
+        <div class="text-center mt-4">
             <a href="{% url 'post_list' %}" class="btn btn-secondary">목록으로</a>
         </div>
     </div>

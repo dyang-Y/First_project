@@ -5,14 +5,15 @@
 {% block content %}
 <div class="row">
     <div class="col-md-6 offset-md-3">
-        <div class="card border-danger">
+        <div class="card border-danger mt-4">
             <div class="card-header bg-danger text-white">
                 <h3 class="mb-0">댓글 삭제 확인</h3>
             </div>
             <div class="card-body">
                 <p class="card-text">정말로 이 댓글을 삭제하시겠습니까?</p>
-                <blockquote class="blockquote">
-                    <p class="small">{{ comment.content }}</p>
+                <blockquote class="blockquote mb-3">
+                    <p class="mb-0">{{ comment.content }}</p>
+                    <footer class="blockquote-footer">{{ comment.created_at|date:"Y-m-d H:i" }}</footer>
                 </blockquote>
                 <p class="text-danger">이 작업은 되돌릴 수 없습니다.</p>
                 

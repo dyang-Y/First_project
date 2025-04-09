@@ -21,11 +21,11 @@
         
         <div class="card">
             <div class="card-body">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label for="{{ form.title.id_for_label }}" class="form-label">제목</label>
+                        <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
                         {{ form.title }}
                         {% if form.title.errors %}
                         <div class="text-danger">
@@ -49,13 +49,53 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="{{ form.content.id_for_label }}" class="form-label">내용</label>
+                        <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
                         {{ form.content }}
                         {% if form.content.errors %}
                         <div class="text-danger">
                             {% for error in form.content.errors %}
                             {{ error }}
                             {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+                        {{ form.image }}
+                        {% if form.image.help_text %}
+                        <div class="form-text">{{ form.image.help_text }}</div>
+                        {% endif %}
+                        {% if form.image.errors %}
+                        <div class="text-danger">
+                            {% for error in form.image.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if form.instance.image %}
+                        <div class="mt-2">
+                            <p>현재 이미지: <a href="{{ form.instance.image.url }}" target="_blank">{{ form.instance.image.name }}</a></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.file.id_for_label }}" class="form-label">{{ form.file.label }}</label>
+                        {{ form.file }}
+                        {% if form.file.help_text %}
+                        <div class="form-text">{{ form.file.help_text }}</div>
+                        {% endif %}
+                        {% if form.file.errors %}
+                        <div class="text-danger">
+                            {% for error in form.file.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if form.instance.file %}
+                        <div class="mt-2">
+                            <p>현재 파일: <a href="{{ form.instance.file.url }}" target="_blank">{{ form.instance.file.name }}</a></p>
                         </div>
                         {% endif %}
                     </div>
