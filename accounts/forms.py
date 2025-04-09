@@ -5,11 +5,16 @@ import re
 from django.core.exceptions import ValidationError
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(
+        max_length=30, 
+        required=True, 
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        help_text='실명을 입력해주세요.'
+    )
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username', 'first_name', 'password1', 'password2')
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,7 +34,7 @@ class SignUpForm(UserCreationForm):
         
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
         if commit:
             user.save()
         return user 
