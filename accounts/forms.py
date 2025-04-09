@@ -9,7 +9,7 @@ class SignUpForm(UserCreationForm):
         max_length=30, 
         required=True, 
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        help_text='실명을 입력해주세요. 한글과 영문자만 사용 가능합니다.'
+        help_text='실명을 입력해주세요. 한글과 영문자만 사용 가능합니다. (공백 사용 불가)'
     )
     
     class Meta:
@@ -34,9 +34,9 @@ class SignUpForm(UserCreationForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
-        # 한글, 영문자만 허용하는 정규식
-        if not re.match(r'^[가-힣a-zA-Z\s]+$', first_name):
-            raise ValidationError('이름은 한글과 영문자만 입력 가능합니다. 숫자나 특수문자는 사용할 수 없습니다.')
+        # 한글, 영문자만 허용하는 정규식 (공백 제외)
+        if not re.match(r'^[가-힣a-zA-Z]+$', first_name):
+            raise ValidationError('이름은 한글과 영문자만 입력 가능합니다. 숫자, 특수문자, 공백은 사용할 수 없습니다.')
         return first_name
         
     def save(self, commit=True):
